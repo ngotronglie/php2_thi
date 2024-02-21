@@ -26,7 +26,7 @@ class Teacher extends Model
     public function getByID($id)
     {
         try {
-            $sql = "SELECT * FROM users WHERE id = :id";
+            $sql = "SELECT * FROM teacher WHERE id = :id";
 
             $stmt = $this->conn->prepare($sql);
 
@@ -41,20 +41,21 @@ class Teacher extends Model
         }
     }
 
-    public function insert($name, $email, $password, $avartar = null)
+    public function insert($name, $email, $salary, $school)
     {
         try {
+
             $sql = "
-                INSERT INTO users(name, email, password, avartar) 
-                VALUES (:name, :email, :password, :avartar)
+            INSERT INTO `teacher` (`name`, `email`, `salary`, `school`) 
+            VALUES (:name, :email, :salary, :school)
             ";
 
             $stmt = $this->conn->prepare($sql);
 
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':password', $password);
-            $stmt->bindParam(':avartar', $avartar);
+            $stmt->bindParam(':salary', $salary);
+            $stmt->bindParam(':school', $school);
 
             $stmt->execute();
         } catch (\Exception $e) {
@@ -63,17 +64,15 @@ class Teacher extends Model
         }
     }
 
-    public function update($id, $name, $email, $password, $role, $avartar = null)
+    public function update($id, $name, $email, $salary, $school)
     {
         try {
             $sql = "
-                UPDATE users 
+                UPDATE teacher 
                                 SET name = :name,
                                     email = :email,
-                                    password = :password,
-                                    avartar = :avartar,
-                                    role = :role
-
+                                    salary = :salary,
+                                    school = :school
                 WHERE id = :id
             ";
 
@@ -82,9 +81,8 @@ class Teacher extends Model
             $stmt->bindParam(':id', $id);
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':password', $password);
-            $stmt->bindParam(':avartar', $avartar);
-            $stmt->bindParam(':role', $role);
+            $stmt->bindParam(':salary', $salary);
+            $stmt->bindParam(':school', $school);
 
             $stmt->execute();
         } catch (\Exception $e) {
@@ -93,10 +91,10 @@ class Teacher extends Model
         }
     }
 
-    public function deleteByID($id)
+    public function delete($id)
     {
         try {
-            $sql = "DELETE FROM users WHERE id = :id";
+            $sql = "DELETE FROM teacher WHERE id = :id";
 
             $stmt = $this->conn->prepare($sql);
 

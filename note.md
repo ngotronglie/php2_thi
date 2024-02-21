@@ -216,10 +216,9 @@ class GiangvienController extends Controller
 
 ```
 
-15: vào `Teacher/index.blade.php` nhúng bootstrap table
-[Table bootstrap ](https://www.w3schools.com/bootstrap5/tryit.asp?filename=trybs_table_basic&stacked=h)
+**15: vào `Teacher/index.blade.php` nhúng bootstrap table [Table bootstrap ](https://www.w3schools.com/bootstrap5/tryit.asp?filename=trybs_table_basic&stacked=h)**
 
-16: hoanf chinhr danh sach
+**16: hoanf chinhr danh sach**
 
 ```php
 <!DOCTYPE html>
@@ -273,5 +272,242 @@ class GiangvienController extends Controller
 </body>
 
 </html>
+
+```
+
+**17: Vào lấy Table trong w3school**
+
+```php
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container mt-3">
+        <h2>Stacked form</h2>
+        <form action="" method="POST">
+            <div class="mb-3 mt-3">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter name" name="name">
+            </div>
+            <div class="mb-3">
+                <label for="email">email</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+            </div>
+            <div class="mb-3">
+                <label for="salary">salary</label>
+                <input type="number" class="form-control" id="salary" placeholder="Enter salary" name="salary">
+            </div>
+            <div class="mb-3">
+                <label for="school">school</label>
+                <input type="text" class="form-control" id="school" placeholder="Enter school" name="school">
+            </div>
+
+            <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+</body>
+
+</html>
+
+```
+
+- sau đó hoàn thiện trang add.blade.php
+
+  - Luu ý : chú ý label ,name, method
+  - vết thêm function vào GiangvienController
+
+  ```php
+     public function add()
+    {
+        if (!empty($_POST)) { // post không cần name
+            $name = $_POST['name'];
+            $email = $_POST['email'];
+            $salary = $_POST['salary'];
+            $school = $_POST['school'];
+            $this->teacher->insert($name, $email, $salary, $school);
+            header('Location: /teacher/');
+        }
+
+        return $this->renderView($this->folder . __FUNCTION__);
+    }
+  ```
+
+**18: viết hàm update bản chất giống create**
+
+- lấy được id teacher cần sửa
+- lấy dc dữ liệu của teacher cần sửa
+- dùng lại Post để update lại
+- sql update
+
+```php
+// TeacherController
+public function update($id, $name, $email, $salary, $school)
+    {
+        try {
+            $sql = "
+                UPDATE teacher
+                                SET name = :name,
+                                    email = :email,
+                                    salary = :salary,
+                                    school = :school
+                WHERE id = :id
+            ";
+
+            $stmt = $this->conn->prepare($sql);
+
+            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':name', $name);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':salary', $salary);
+            $stmt->bindParam(':school', $school);
+
+            $stmt->execute();
+        } catch (\Exception $e) {
+            echo 'ERROR: ' . $e->getMessage();
+            die;
+        }
+    }
+```
+
+```php
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container mt-3">
+        <h2>update form</h2>
+        <form action="" method="POST">
+            <div class="mb-3 mt-3">
+                <label for="name">Name</label>
+                <input value="{{ $teacher['name'] }}" type="text" class="form-control" id="name"
+                    placeholder="Enter name" name="name">
+            </div>
+            <div class="mb-3">
+                <label for="email">email</label>
+                <input value="{{ $teacher['email'] }}" type="email" class="form-control" id="email"
+                    placeholder="Enter email" name="email">
+            </div>
+            <div class="mb-3">
+                <label for="salary">salary</label>
+                <input value="{{ $teacher['salary'] }}" type="number" class="form-control" id="salary"
+                    placeholder="Enter salary" name="salary">
+            </div>
+            <div class="mb-3">
+                <label for="school">school</label>
+                <input value="{{ $teacher['school'] }}" type="text" class="form-control" id="school"
+                    placeholder="Enter school" name="school">
+            </div>
+
+            <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+</body>
+
+</html>
+
+
+```
+
+**19: Show**
+
+- Chuyển từ update qua và xóa đi empy($\_POST)
+- không cần viết sql trong models , chỉ lấy dc id rồi hiện thông tin ra
+- vào GiangvienController coppy Update
+
+```php
+public function show($id)
+    {
+        $teacher = $this->teacher->getByID($id); // lấy được id teacher
+        if (empty($teacher)) {
+            echo 'Không có teacher này!';
+        }
+        return $this->renderView($this->folder . __FUNCTION__, ['teacher' => $teacher]);
+    }
+```
+
+```php
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container mt-3">
+        <h2>chi tiết</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>name</th>
+                    <th>Email</th>
+                    <th>salary</th>
+                    <th>school</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ $teacher['id'] }}</td>
+                    <td>{{ $teacher['name'] }}</td>
+                    <td>{{ $teacher['email'] }}</td>
+                    <td>{{ $teacher['salary'] }}</td>
+                    <td>{{ $teacher['school'] }}</td>
+                </tr>
+
+
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>
+
+
+```
+
+**20: delete**
+
+- get id
+- delete teacher
+
+```php
+public function delete($id)
+    {
+        $teacher = $this->teacher->getByID($id); // lấy được id teacher
+        if (empty($teacher)) {
+            echo 'Không có teacher này!';
+        } else {
+            $this->teacher->delete($id);
+            header('location: /teacher/');
+        }
+    }
 
 ```

@@ -13,7 +13,7 @@
 
     <div class="container mt-3">
         <h2>Danh sách </h2>
-        <a class="btn btn-primary" href="/add">theem moi</a>
+        <a class="btn btn-primary" href="teacher/add">theem moi</a>
         <table class="table">
             <thead>
                 <tr>
@@ -34,9 +34,9 @@
                         <th>{{ $item['salary'] }}</th>
                         <th>{{ $item['school'] }}</th>
                         <th>
-                            <a class="btn btn-info" href="/show">Show</a>
-                            <a class="btn btn-warning" href="/{{ $item['id'] }}/update">update</a>
-                            <a class="btn btn-danger" href="/{{ $item['id'] }}/delete">delete</a>
+                            <a class="btn btn-info" href="teacher/{{ $item['id'] }}/show">Show</a>
+                            <a class="btn btn-warning" href="/teacher/{{ $item['id'] }}/update">update</a>
+                            <a class="btn btn-danger" href="/teacher/{{ $item['id'] }}/delete">delete</a>
                         </th>
 
                     </tr>
